@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<file_list>
+    <generator>IP Compiler (Version 2016.4B2 build 17944)</generator>
+    <file name="generate.log" format="log" description="Generate Log"/>
+    <file name="tsmac_phy_tmpl.v" format="verilog" description="Instantiation Template"/>
+    <file name="rev_1/tsmac_phy.vm" format="vm" description="Synthesis Result"/>
+    <file name="rev_1/ipc_synplify_pro.log" format="log" description="Synthesis Log"/>
+</file_list>

@@ -1,0 +1,42 @@
+###==== BEGIN Clocks 
+#create_clock -name {free_clk} [get_ports {i_free_clk}] -period {10} -waveform {0.000 5.000}
+#create_clock -name {p_clk2core_tx_0} [get_pins {U_INST.o_p_clk2core_tx_0}] -period {6.4} -waveform {0 3.2} 
+#create_clock -name {p_clk2core_tx_1} [get_pins {U_INST.o_p_clk2core_tx_1}] -period {6.4} -waveform {0 3.2} 
+#create_clock -name {p_clk2core_tx_2} [get_pins {U_INST.o_p_clk2core_tx_2}] -period {6.4} -waveform {0 3.2} 
+#create_clock -name {p_clk2core_tx_3} [get_pins {U_INST.o_p_clk2core_tx_3}] -period {6.4} -waveform {0 3.2} 
+#create_clock -name {p_clk2core_rx_0} [get_pins {U_INST.o_p_clk2core_rx_0}] -period {6.4} -waveform {0 3.2} 
+#create_clock -name {p_clk2core_rx_1} [get_pins {U_INST.o_p_clk2core_rx_1}] -period {6.4} -waveform {0 3.2} 
+#create_clock -name {p_clk2core_rx_2} [get_pins {U_INST.o_p_clk2core_rx_2}] -period {6.4} -waveform {0 3.2} 
+#create_clock -name {p_clk2core_rx_3} [get_pins {U_INST.o_p_clk2core_rx_3}] -period {6.4} -waveform {0 3.2} 
+###==== END Clocks
+###==== BEGIN "set_clock_groups"
+#set_clock_groups -name free_clk        -asynchronous -group [get_clocks {free_clk}]
+#set_clock_groups -name p_clk2core_tx_0 -asynchronous -group [get_clocks {p_clk2core_tx_0}]
+#set_clock_groups -name p_clk2core_tx_1 -asynchronous -group [get_clocks {p_clk2core_tx_1}]
+#set_clock_groups -name p_clk2core_tx_2 -asynchronous -group [get_clocks {p_clk2core_tx_2}]
+#set_clock_groups -name p_clk2core_tx_3 -asynchronous -group [get_clocks {p_clk2core_tx_3}]
+#set_clock_groups -name p_clk2core_rx_0 -asynchronous -group [get_clocks {p_clk2core_rx_0}]
+#set_clock_groups -name p_clk2core_rx_1 -asynchronous -group [get_clocks {p_clk2core_rx_1}]
+#set_clock_groups -name p_clk2core_rx_2 -asynchronous -group [get_clocks {p_clk2core_rx_2}]
+#set_clock_groups -name p_clk2core_rx_3 -asynchronous -group [get_clocks {p_clk2core_rx_3}]
+###==== END "set_clock_groups"
+###==== BEGIN "Inputs/Outpusts"
+###==== END "Inputs/Outpusts"
+###==== BEGIN "Delay Paths"
+###==== END "Delay Paths"
+###==== BEGIN Attributes - (Populated from tab in SCOPE, do not edit)
+### The HSST Location Constraint
+#define_attribute {i:U_INST.U_GTP_HSST_WRAPPER.U_GTP_HSST} {PAP_LOC} {HSST_88_340}
+###==== END Attributes
+#define_attribute {t:U_INST.o_p_clk2core_tx_0} {PAP_CLOCK_ASSIGN} {GTP_CLKBUFG}
+#define_attribute {t:U_INST.o_p_clk2core_tx_1} {PAP_CLOCK_ASSIGN} {GTP_CLKBUFG}
+#define_attribute {t:U_INST.o_p_clk2core_tx_2} {PAP_CLOCK_ASSIGN} {GTP_CLKBUFG}
+#define_attribute {t:U_INST.o_p_clk2core_tx_3} {PAP_CLOCK_ASSIGN} {GTP_CLKBUFG}
+#define_attribute {t:U_INST.o_p_clk2core_rx_0} {PAP_CLOCK_ASSIGN} {GTP_CLKBUFG}
+#define_attribute {t:U_INST.o_p_clk2core_rx_1} {PAP_CLOCK_ASSIGN} {GTP_CLKBUFG}
+#define_attribute {t:U_INST.o_p_clk2core_rx_2} {PAP_CLOCK_ASSIGN} {GTP_CLKBUFG}
+#define_attribute {t:U_INST.o_p_clk2core_rx_3} {PAP_CLOCK_ASSIGN} {GTP_CLKBUFG}
+###==== BEGIN Attributes - (Populated from tab in SCOPE, do not edit)
+###==== END Attributes
+###==== BEGIN Attributes - IO table (Populated from tab in SCOPE, do not edit)
+####==== END Attributes(IO table)

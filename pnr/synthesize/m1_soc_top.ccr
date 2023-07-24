@@ -1,0 +1,201 @@
+##### Written on 2023/07/20 19:27:02 ###############################
+
+
+##### INFO ##################################################
+
+Current device : 
+	PGL50H-6FBG484
+
+Top Module : 
+	m1_soc_top
+
+Constraint File(s) : 
+	C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc
+
+##### SUMMARY ######################################################
+
+Found 0 error(s), 36 critical warning(s), 10 warning(s), out of 1136 constraint(s)
+
+
+Inapplicable constraints(except overwritten constraints):
+********************************************
+
+
+
+define_attribute {p:rst_key} {PAP_IO_LOC} {K18}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 87)] | Port rst_key has been placed at location K18, whose type is share pin.
+
+define_attribute {p:spi0_clk} {PAP_IO_LOC} {Y20}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 159)] | Port spi0_clk has been placed at location Y20, whose type is share pin.
+
+define_attribute {p:spi0_cs} {PAP_IO_LOC} {AA3}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 166)] | Port spi0_cs has been placed at location AA3, whose type is share pin.
+
+define_attribute {p:spi0_mosi} {PAP_IO_LOC} {AB20}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 173)] | Port spi0_mosi has been placed at location AB20, whose type is share pin.
+
+define_attribute {p:spi0_miso} {PAP_IO_LOC} {AA20}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 180)] | Port spi0_miso has been placed at location AA20, whose type is share pin.
+
+define_attribute {p:mem_dq[14]} {PAP_IO_LOC} {P3}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 339)] | Port mem_dq[14] has been placed at location P3, whose type is share pin.
+
+define_attribute {p:mem_dq[11]} {PAP_IO_LOC} {M1}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 360)] | Port mem_dq[11] has been placed at location M1, whose type is share pin.
+
+define_attribute {p:mem_dq[9]} {PAP_IO_LOC} {M2}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 374)] | Port mem_dq[9] has been placed at location M2, whose type is share pin.
+
+define_attribute {p:phy_tx_en} {PAP_IO_LOC} {B18}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 584)] | Port phy_tx_en has been placed at location B18, whose type is share pin.
+
+define_attribute {p:phy_txd1} {PAP_IO_LOC} {D17}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 598)] | Port phy_txd1 has been placed at location D17, whose type is share pin.
+
+define_attribute {p:phy_txd2} {PAP_IO_LOC} {C18}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 605)] | Port phy_txd2 has been placed at location C18, whose type is share pin.
+
+define_attribute {p:phy_txd3} {PAP_IO_LOC} {A18}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 612)] | Port phy_txd3 has been placed at location A18, whose type is share pin.
+
+define_attribute {p:cmos1_sda} {PAP_IO_LOC} {Y13}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 626)] | Port cmos1_sda has been placed at location Y13, whose type is share pin.
+
+define_attribute {p:cmos2_href} {PAP_IO_LOC} {AB5}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 676)] | Port cmos2_href has been placed at location AB5, whose type is share pin.
+
+define_attribute {p:cmos2_vsync} {PAP_IO_LOC} {Y5}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 686)] | Port cmos2_vsync has been placed at location Y5, whose type is share pin.
+
+define_attribute {p:cmos1_data[7]} {PAP_IO_LOC} {AB13}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 691)] | Port cmos1_data[7] has been placed at location AB13, whose type is share pin.
+
+define_attribute {p:pixclk_out} {PAP_IO_LOC} {M22}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 792)] | Port pixclk_out has been placed at location M22, whose type is share pin.
+
+define_attribute {p:b_out[5]} {PAP_IO_LOC} {R22}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 858)] | Port b_out[5] has been placed at location R22, whose type is share pin.
+
+define_attribute {p:b_out[4]} {PAP_IO_LOC} {R20}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 865)] | Port b_out[4] has been placed at location R20, whose type is share pin.
+
+define_attribute {p:b_out[2]} {PAP_IO_LOC} {T21}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 879)] | Port b_out[2] has been placed at location T21, whose type is share pin.
+
+define_attribute {p:g_out[7]} {PAP_IO_LOC} {L17}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 900)] | Port g_out[7] has been placed at location L17, whose type is share pin.
+
+define_attribute {p:g_out[6]} {PAP_IO_LOC} {K20}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 907)] | Port g_out[6] has been placed at location K20, whose type is share pin.
+
+define_attribute {p:g_out[5]} {PAP_IO_LOC} {L19}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 914)] | Port g_out[5] has been placed at location L19, whose type is share pin.
+
+define_attribute {p:g_out[0]} {PAP_IO_LOC} {M21}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 949)] | Port g_out[0] has been placed at location M21, whose type is share pin.
+
+define_attribute {p:r_out[7]} {PAP_IO_LOC} {H19}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 956)] | Port r_out[7] has been placed at location H19, whose type is share pin.
+
+define_attribute {p:r_out[6]} {PAP_IO_LOC} {H22}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 963)] | Port r_out[6] has been placed at location H22, whose type is share pin.
+
+define_attribute {p:r_out[5]} {PAP_IO_LOC} {H21}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 970)] | Port r_out[5] has been placed at location H21, whose type is share pin.
+
+define_attribute {p:r_out[0]} {PAP_IO_LOC} {K17}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 1005)] | Port r_out[0] has been placed at location K17, whose type is share pin.
+
+define_attribute {p:iic_sda} {PAP_IO_LOC} {V20}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 1012)] | Port iic_sda has been placed at location V20, whose type is share pin.
+
+define_attribute {p:iic_scl} {PAP_IO_LOC} {V19}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 1019)] | Port iic_scl has been placed at location V19, whose type is share pin.
+
+define_attribute {p:pixclk_in} {PAP_IO_LOC} {AA12}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 1026)] | Port pixclk_in has been placed at location AA12, whose type is share pin.
+
+define_attribute {p:g_in[5]} {PAP_IO_LOC} {AB18}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 1096)] | Port g_in[5] has been placed at location AB18, whose type is share pin.
+
+define_attribute {p:g_in[4]} {PAP_IO_LOC} {AA18}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 1101)] | Port g_in[4] has been placed at location AA18, whose type is share pin.
+
+define_attribute {p:g_in[3]} {PAP_IO_LOC} {AB19}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 1106)] | Port g_in[3] has been placed at location AB19, whose type is share pin.
+
+define_attribute {p:g_in[2]} {PAP_IO_LOC} {W18}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 1111)] | Port g_in[2] has been placed at location W18, whose type is share pin.
+
+define_attribute {p:g_in[1]} {PAP_IO_LOC} {V17}
+
+	C: ConstraintEditor-2002: [C:/Users/YHX/Desktop/rtl_design_V1.9.1_30hz_hsst/pnr/source/M1_SoC_TOP.fdc(line number: 1116)] | Port g_in[1] has been placed at location V17, whose type is share pin.
+
+
+Constraints with issues:
+********************************************
+
+
+
+get_clocks pix_clk
+	C: SDC-2017: Nothing implicitly matched 'pix_clk'.
+
+
+
+
+
+W: ConstraintEditor-4019: Port 'o_p_l2txn' unspecified I/O constraint.
+W: ConstraintEditor-4019: Port 'o_p_l2txp' unspecified I/O constraint.
+W: ConstraintEditor-4019: Port 'o_p_l3txn' unspecified I/O constraint.
+W: ConstraintEditor-4019: Port 'o_p_l3txp' unspecified I/O constraint.
+W: ConstraintEditor-4019: Port 'i_p_l2rxn' unspecified I/O constraint.
+W: ConstraintEditor-4019: Port 'i_p_l2rxp' unspecified I/O constraint.
+W: ConstraintEditor-4019: Port 'i_p_l3rxn' unspecified I/O constraint.
+W: ConstraintEditor-4019: Port 'i_p_l3rxp' unspecified I/O constraint.
+W: ConstraintEditor-4019: Port 'i_p_refckn_0' unspecified I/O constraint.
+W: ConstraintEditor-4019: Port 'i_p_refckp_0' unspecified I/O constraint.
+
+
+
+Constraints with matching wildcard expressions:
+********************************************
+
+
+
+
+

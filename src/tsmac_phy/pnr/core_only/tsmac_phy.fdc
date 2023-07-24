@@ -1,0 +1,19 @@
+###==== BEGIN Clocks
+create_clock -name {tx_clki} {p:tx_clki} -period {8} -waveform {0 4}
+create_clock -name {rx_clki} {p:rx_clki} -period {8} -waveform {0 4}
+###==== END Clocks
+
+###==== BEGIN "Generated Clocks"
+###==== END "Generated Clocks"
+
+###==== BEGIN "Inputs/Outpusts"
+###==== END "Inputs/Outpusts"
+
+###==== BEGIN "Delay Paths"
+###==== END "Delay Paths"
+
+###==== BEGIN Attributes - (Populated from tab in SCOPE, do not edit)
+###==== END Attributes
+
+###==== BEGIN Attributes - IO table (Populated from tab in SCOPE, do not edit)
+###==== END Attributes(IO table)
