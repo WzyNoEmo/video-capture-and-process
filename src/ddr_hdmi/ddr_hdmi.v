@@ -75,7 +75,16 @@ module ddr_hdmi#(
     input                                      rx_en                ,// output reg        rx_en,                          
     input                                      rx_finish            ,// output            rx_finish      
     input     wire[15:0]                       clk_div_cnt          ,
-    output        [7:0]                        led_8wire
+    output        [7:0]                        led_8wire            ,
+
+//gpio
+    input             gpio_in0_db,
+    input             gpio_in1_db,
+    input             gpio_in2_db,
+    input             gpio_in3_db,
+    input             gpio_in4_db,
+
+    input  [4:0]          soc_sel
 );
 
     wire     [15:0]    o_rgb565;
@@ -153,10 +162,97 @@ assign led_8wire[7:4] = box_cnt[3:0];
         .axi_rdata      (  axi_rdata            ),// input[255:0]
         .axi_rvalid     (  axi_rvalid           ),// input
         .axi_rlast      (  axi_rlast            ),// input
-        .axi_rid        (  axi_rid              ) // input[3:0]         
+        .axi_rid        (  axi_rid              ), // input[3:0]    
+        .video_sel      (final_sel)        
     );
 
+//choose
+reg [4:0] final_sel = 5'b10000;
+always @(posedge pix_clk)
+begin
+    if(soc_sel_reg_last != soc_sel_reg)
+        final_sel <= soc_sel_reg;
+    else if(video_sel_last != video_sel)
+        final_sel <= video_sel;
+    else final_sel <= final_sel;
+end
 
+
+
+//soc
+reg [4:0] soc_sel_reg = 5'b10000;
+reg [4:0] soc_sel_reg_last = 5'b10000;
+
+always @(posedge pix_clk)
+begin
+    soc_sel_reg_last <= soc_sel_reg;
+end
+
+always @(posedge pix_clk)
+begin
+    case(soc_sel)
+        5'b10000:begin
+            soc_sel_reg <= 5'b10000;
+        end
+        5'b01000:begin
+            soc_sel_reg <= 5'b01000;
+        end
+        5'b00100:begin
+            soc_sel_reg <= 5'b00100;
+        end
+        5'b00010:begin
+            soc_sel_reg <= 5'b00010;
+        end
+        5'b00001:begin
+            soc_sel_reg <= 5'b00001;
+        end
+        default:begin
+            soc_sel_reg <= soc_sel_reg;
+        end
+    endcase  
+end
+
+
+//gpio
+wire [4:0] button_sel;
+reg [4:0] video_sel = 5'b10000;
+reg [4:0] video_sel_last = 5'b10000;
+
+assign button_sel = {gpio_in0_db, gpio_in1_db, gpio_in2_db, gpio_in3_db, gpio_in4_db};
+
+
+always @(posedge pix_clk)
+begin
+    video_sel_last <= video_sel;
+end
+
+always @(posedge pix_clk)
+begin
+    case(button_sel)
+        5'b01111:begin
+            video_sel <= 5'b10000;
+        end
+        5'b10111:begin
+            video_sel <= 5'b01000;
+        end
+        5'b11011:begin
+            video_sel <= 5'b00100;
+        end
+        5'b11101:begin
+            video_sel <= 5'b00010;
+        end
+        5'b11110:begin
+            video_sel <= 5'b00001;
+        end
+        default:begin
+            video_sel <= video_sel;
+        end
+    endcase        
+end
+
+
+
+//uart
 always@(posedge pix_clk) begin
     if ((h_count > boxs[0][63:48]-2) && (h_count < boxs[0][31:16]+2) && (v_count > boxs[0][47:32]-2) && (v_count < boxs[0][47:32]+2) ||
         (h_count > boxs[0][31:16]-2) && (h_count < boxs[0][31:16]+2) && (v_count > boxs[0][47:32]-2) && (v_count < boxs[0][15:0]+2) ||
@@ -456,30 +552,6 @@ always@(posedge pix_clk) begin
     end
 end
 
-
-
-// //test
-// always@(posedge pix_clk) begin
-//     if ((h_count > boxs[0]-2) && (h_count < boxs[0]+2) && (v_count > boxs[0]-2) && (v_count < boxs[0]+2) )
-//         begin
-//         r_out<=255;
-//         g_out<=0;
-//         b_out<=0; 
-//         vs_out<=vs_o;
-//         hs_out<=hs_o;
-//         de_out<=de_o;
-//         end
-//     else begin
-//         r_out<={o_rgb565[15:11],3'b0   };
-//         g_out<={o_rgb565[10:5],2'b0    };
-//         b_out<={o_rgb565[4:0],3'b0     }; 
-//         vs_out<=vs_o;
-//         hs_out<=hs_o;
-//         de_out<=de_o;
-//     end
-// end
-
-
 //计数坐标
 always @ (posedge pix_clk)
 begin
@@ -551,10 +623,6 @@ begin
         cnt_8 <= cnt_8+1;
     else cnt_8 <= cnt_8;
 end
-
-
-//存放框选坐标
-
 
 /////////////////////////////////////////////////////////////////////////////////////
 //产生visa时序 

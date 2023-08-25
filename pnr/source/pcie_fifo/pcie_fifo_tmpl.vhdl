@@ -13,14 +13,14 @@ COMPONENT pcie_fifo
     wr_en : IN STD_LOGIC;
     wr_data : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
     wr_full : OUT STD_LOGIC;
-    wr_water_level : OUT STD_LOGIC_VECTOR(12 DOWNTO 0);
+    wr_water_level : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
     almost_full : OUT STD_LOGIC;
     rd_clk : IN STD_LOGIC;
     rd_rst : IN STD_LOGIC;
     rd_en : IN STD_LOGIC;
     rd_data : OUT STD_LOGIC_VECTOR(127 DOWNTO 0);
     rd_empty : OUT STD_LOGIC;
-    rd_water_level : OUT STD_LOGIC_VECTOR(9 DOWNTO 0);
+    rd_water_level : OUT STD_LOGIC_VECTOR(12 DOWNTO 0);
     almost_empty : OUT STD_LOGIC
   );
 END COMPONENT;

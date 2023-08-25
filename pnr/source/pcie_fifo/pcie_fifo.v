@@ -42,11 +42,11 @@ module pcie_fifo
    );
 
 
-localparam WR_DEPTH_WIDTH = 12 ; // @IPC int 9,20
+localparam WR_DEPTH_WIDTH = 15 ; // @IPC int 9,20
 
 localparam WR_DATA_WIDTH = 16 ; // @IPC int 1,1152
 
-localparam RD_DEPTH_WIDTH = 9 ; // @IPC int 9,20
+localparam RD_DEPTH_WIDTH = 12 ; // @IPC int 9,20
 
 localparam RD_DATA_WIDTH = 128 ; // @IPC int 1,1152
 

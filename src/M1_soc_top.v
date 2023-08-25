@@ -12,6 +12,12 @@ module m1_soc_top #(
 
     input             gpio_in0,
     input             gpio_in1,
+    input             gpio_in2,
+    input             gpio_in3,
+    input             gpio_in4,
+    input             gpio_in5,
+    input             gpio_in6,
+
     output  [7:0]     LED,
 
     output            spi0_clk,
@@ -97,7 +103,7 @@ module m1_soc_top #(
     input      [7:0]                      b_in ,
 
 //hsst
-    input          i_p_refckn_0                  ,
+    /*input          i_p_refckn_0                  ,
     input          i_p_refckp_0                  ,
 
     input          i_p_l2rxn                     ,
@@ -109,29 +115,23 @@ module m1_soc_top #(
     output         o_p_l3txn                     ,
     output         o_p_l3txp                     ,
 
-    output[1:0]    tx_disable                    ,
+    output[1:0]    tx_disable                    ,*/
 
 //UART
     input         uart_rx,
-    output        uart_tx
+    output        uart_tx,
 
 //pcie
-   /* input                       perst_n         ,
+    input                       perst_n         ,
     input                       ref_clk_n       ,      
     input                       ref_clk_p       , 
     input           [1:0]       rxn             ,
     input           [1:0]       rxp             ,
     output  wire    [1:0]       txn             ,
-    output  wire    [1:0]       txp             */
+    output  wire    [1:0]       txp             
 
 
 ); 
-
-    `ifdef SIMULATION
-        `include "../bench/src/m1_core/cm1_option_defs.v"
-    `else
-        `include "m1_core/cm1_option_defs.v"
-    `endif
 
     wire              HCLK;           // AHB Memory clock
     wire              HREADYOUT;      // AHB Memory ready
@@ -295,13 +295,110 @@ module m1_soc_top #(
 
     pll u_pll (
         .clkin1   (  sys_clk    ),//50MHz
-        .clkout0  (  HCLK       ),//125M
+        .clkout0  (  HCLK       ),
         .clkout1  (  cfg_clk    ),//10MHz
         .clkout2  (  clk_25M    ),//25M
         .clkout3  (  pix_clk    ),//74.25M 720P60
         .pll_lock (  pll_lock     )
     );
 
+//key-------------------------------------------
+wire gpio_in0_db;
+wire gpio_in1_db;
+wire gpio_in2_db;
+wire gpio_in3_db;
+wire gpio_in4_db;
+
+hsst_rst_cross_sync_v1_0 #(
+    `ifdef IPSL_PCIE_SPEEDUP_SIM
+    .RST_CNTR_VALUE     (16'h10             )
+    `else
+    .RST_CNTR_VALUE     (16'hC000           )
+    `endif
+)
+u_gpio_in0_debounce(
+    .clk                (pix_clk            ),
+    .rstn_in            (gpio_in0       ),
+    .rstn_out           (gpio_in0_db  )
+);
+
+hsst_rst_cross_sync_v1_0 #(
+    `ifdef IPSL_PCIE_SPEEDUP_SIM
+    .RST_CNTR_VALUE     (16'h10             )
+    `else
+    .RST_CNTR_VALUE     (16'hC000           )
+    `endif
+)
+u_gpio_in1_debounce(
+    .clk                (pix_clk            ),
+    .rstn_in            (gpio_in1       ),
+    .rstn_out           (gpio_in1_db  )
+);
+
+hsst_rst_cross_sync_v1_0 #(
+    `ifdef IPSL_PCIE_SPEEDUP_SIM
+    .RST_CNTR_VALUE     (16'h10             )
+    `else
+    .RST_CNTR_VALUE     (16'hC000           )
+    `endif
+)
+u_gpio_in2_debounce(
+    .clk                (pix_clk            ),
+    .rstn_in            (gpio_in2       ),
+    .rstn_out           (gpio_in2_db  )
+);
+
+hsst_rst_cross_sync_v1_0 #(
+    `ifdef IPSL_PCIE_SPEEDUP_SIM
+    .RST_CNTR_VALUE     (16'h10             )
+    `else
+    .RST_CNTR_VALUE     (16'hC000           )
+    `endif
+)
+u_gpio_in3_debounce(
+    .clk                (pix_clk            ),
+    .rstn_in            (gpio_in3       ),
+    .rstn_out           (gpio_in3_db  )
+);
+
+hsst_rst_cross_sync_v1_0 #(
+    `ifdef IPSL_PCIE_SPEEDUP_SIM
+    .RST_CNTR_VALUE     (16'h10             )
+    `else
+    .RST_CNTR_VALUE     (16'hC000           )
+    `endif
+)
+u_gpio_in4_debounce(
+    .clk                (pix_clk            ),
+    .rstn_in            (gpio_in4       ),
+    .rstn_out           (gpio_in4_db  )
+);
+
+hsst_rst_cross_sync_v1_0 #(
+    `ifdef IPSL_PCIE_SPEEDUP_SIM
+    .RST_CNTR_VALUE     (16'h10             )
+    `else
+    .RST_CNTR_VALUE     (16'hC000           )
+    `endif
+)
+u_gpio_in5_debounce(
+    .clk                (pix_clk            ),
+    .rstn_in            (gpio_in5       ),
+    .rstn_out           (gpio_in5_db  )
+);
+
+hsst_rst_cross_sync_v1_0 #(
+    `ifdef IPSL_PCIE_SPEEDUP_SIM
+    .RST_CNTR_VALUE     (16'h10             )
+    `else
+    .RST_CNTR_VALUE     (16'hC000           )
+    `endif
+)
+u_gpio_in6_debounce(
+    .clk                (pix_clk            ),
+    .rstn_in            (gpio_in6       ),
+    .rstn_out           (gpio_in6_db  )
+);
 
 //Soft Reset---------------------------------------------------------  
     wire   DBGRESETn;
@@ -340,9 +437,10 @@ module m1_soc_top #(
     wire    [1:0] cmos_init_done;
 
     assign LED[0]      = heart_beat_led ;    //pcie
-    assign LED[1]      = o_rxlane_done_3;    //optical fibal
+    //assign LED[1]      = o_rxlane_done_3;    //optical fibal
+    assign LED[1]      = rdlh_link_up;    //optical fibal
     assign LED[2]      = ddr_init_done;     //ddr
-    //assign LED[3]      = smlh_link_up & rdlh_link_up ;    //pcie
+    assign LED[3]      = smlh_link_up ;    //pcie
     assign LED[5:4]    = cmos_init_done;    //cmos
     assign LED[6]      = init_over_tx;      //hdmi
     assign LED[7]      = eth_init_done;     //ethernet
@@ -364,155 +462,234 @@ module m1_soc_top #(
             heart_beat_led <= ~heart_beat_led;
     end
 
-//M1 CORE------------------------------------------------------------ 
-    assign gpio_out = p0_outen[15:8] & p0_out[15:8];
 
-    wire [7:0] spi0_cs_0;
-    assign spi0_cs = spi0_cs_0[0];
+//E902 CORE--------------------------------------------------
 
-    wire scl_pad_i;
-    wire scl_pad_o;
-    wire sda_pad_i;
-    wire sda_pad_o;
 
-    assign i2c0_sck  = scl_pad_o ? 1'bz : 1'b0;
-    assign i2c0_sda  = sda_pad_o ? 1'bz : 1'b0;
-    assign scl_pad_i = i2c0_sck;
-    assign sda_pad_i = i2c0_sda;
+wire [31:0] cpu_hmain0_m2_haddr;/*synthesis PAP_MARK_DEBUG="1"*/
+wire [2:0]  cpu_hmain0_m2_hburst;
+wire [3:0]  cpu_hmain0_m2_hprot;
+wire [2:0]  cpu_hmain0_m2_hsize;
+wire [1:0]  cpu_hmain0_m2_htrans;
+wire [31:0] cpu_hmain0_m2_hwdata;/*synthesis PAP_MARK_DEBUG="1"*/
+wire        cpu_hmain0_m2_hwrite;/*synthesis PAP_MARK_DEBUG="1"*/
 
-    assign m1_tpnd = tsmac_tpnd && ~udp_cs;
+reg [31:0] hmain0_cpu_m2_hrdata;/*synthesis PAP_MARK_DEBUG="1"*/
+
+reg [31:0] cpu_hmain0_m2_haddr_SRAM;/*synthesis PAP_MARK_DEBUG="1"*/
+reg [3:0]  cpu_hmain0_m2_hprot_SRAM;
+reg [2:0]  cpu_hmain0_m2_hsize_SRAM;
+reg [1:0]  cpu_hmain0_m2_htrans_SRAM;
+reg [31:0] cpu_hmain0_m2_hwdata_SRAM;/*synthesis PAP_MARK_DEBUG="1"*/
+reg        cpu_hmain0_m2_hwrite_SRAM;/*synthesis PAP_MARK_DEBUG="1"*/
+reg        mem_hsel_SRAM;
+
+wire [31:0] hmain0_cpu_m2_hrdata_SRAM;/*synthesis PAP_MARK_DEBUG="1"*/
+wire [31:0] hmain0_cpu_m2_hready_SRAM;
+
+wire [31:0] cpu_hmain0_m0_haddr;/*synthesis PAP_MARK_DEBUG="1"*/
+wire [31:0] hmain0_cpu_m0_hrdata;/*synthesis PAP_MARK_DEBUG="1"*/
+
+
+core_top  x_cpu_top (
+  .apb0_dummy1_intr      (1'b0     ),
+  .apb0_dummy2_intr      (1'b0     ),
+  .apb0_dummy3_intr      (1'b0     ),
+  .apb0_dummy4_intr      (1'b0     ),
+  .apb0_dummy5_intr      (1'b0     ),
+  .apb0_dummy7_intr      (1'b0     ),
+  .apb0_dummy8_intr      (1'b0     ),
+  .apb0_dummy9_intr      (1'b0     ),
+  .apb1_dummy1_intr      (1'b0     ),
+  .apb1_dummy2_intr      (1'b0     ),
+  .apb1_dummy3_intr      (1'b0     ),
+  .apb1_dummy4_intr      (1'b0     ),
+  .apb1_dummy5_intr      (1'b0     ),
+  .apb1_dummy6_intr      (1'b0     ),
+  .apb1_dummy7_intr      (1'b0     ),
+  .apb1_dummy8_intr      (1'b0     ),
+
+  .bist0_mode            (1'b1           ),
+  .cpu_hmain0_m0_haddr   (cpu_hmain0_m0_haddr  ),
+  .cpu_hmain0_m0_hburst  (cpu_hmain0_m0_hburst ),
+  .cpu_hmain0_m0_hprot   (cpu_hmain0_m0_hprot  ),
+  .cpu_hmain0_m0_hsize   (cpu_hmain0_m0_hsize  ),
+  .cpu_hmain0_m0_htrans  (cpu_hmain0_m0_htrans ),
+  .cpu_hmain0_m0_hwdata  (cpu_hmain0_m0_hwdata ),
+  .cpu_hmain0_m0_hwrite  (cpu_hmain0_m0_hwrite ),
+  .cpu_hmain0_m1_haddr   (cpu_hmain0_m1_haddr  ),
+  .cpu_hmain0_m1_hburst  (cpu_hmain0_m1_hburst ),
+  .cpu_hmain0_m1_hprot   (cpu_hmain0_m1_hprot  ),
+  .cpu_hmain0_m1_hsize   (cpu_hmain0_m1_hsize  ),
+  .cpu_hmain0_m1_htrans  (cpu_hmain0_m1_htrans ),
+  .cpu_hmain0_m1_hwdata  (cpu_hmain0_m1_hwdata ),
+  .cpu_hmain0_m1_hwrite  (cpu_hmain0_m1_hwrite ),
+  .cpu_hmain0_m2_haddr   (cpu_hmain0_m2_haddr  ),
+  .cpu_hmain0_m2_hburst  (cpu_hmain0_m2_hburst ),
+  .cpu_hmain0_m2_hprot   (cpu_hmain0_m2_hprot  ),
+  .cpu_hmain0_m2_hsize   (cpu_hmain0_m2_hsize  ),
+  .cpu_hmain0_m2_htrans  (cpu_hmain0_m2_htrans ),
+  .cpu_hmain0_m2_hwdata  (cpu_hmain0_m2_hwdata ),
+  .cpu_hmain0_m2_hwrite  (cpu_hmain0_m2_hwrite ),
+
+  .cpu_padmux_jtg_tms_o  ( ),
+  .cpu_padmux_jtg_tms_oe ( ),
+
+  .cpu_pmu_dfs_ack       (cpu_pmu_dfs_ack      ),
+  .cpu_pmu_sleep_b       (cpu_pmu_sleep_b      ),
+  .dft_clk               (HCLK              ),
+
+  .dmac0_wic_intr        (1'b0       ),
+  .gpio_wic_intr         (1'b0        ),
+
+  .hmain0_cpu_m0_hrdata  (hmain0_cpu_m0_hrdata ),
+  .hmain0_cpu_m0_hready  (1'b1 ),
+  .hmain0_cpu_m0_hresp   (2'b0  ),
+  .hmain0_cpu_m1_hrdata  (32'b0 ),
+  .hmain0_cpu_m1_hready  (1'b1 ),
+  .hmain0_cpu_m1_hresp   (2'b0  ), 
+  .hmain0_cpu_m2_hrdata  ({4{receive_data}} ),
+  .hmain0_cpu_m2_hready  (1'b1 ),
+  .hmain0_cpu_m2_hresp   (2'b0  ),
+
+  .lsbus_dummy0_intr     (1'b0    ),
+  .lsbus_dummy1_intr     (1'b0    ),
+  .lsbus_dummy2_intr     (1'b0    ),
+  .lsbus_dummy3_intr     (1'b0    ),
+  .main_dmemdummy0_intr  (1'b0     ),
+  .main_dummy0_intr      (1'b0     ),
+  .main_dummy1_intr      (1'b0     ),
+  .main_dummy2_intr      (1'b0     ),
+  .main_dummy3_intr      (1'b0     ),
+  .main_imemdummy0_intr  (1'b0 ),
+
+  .pad_core_clk          (HCLK         ),
+  .pad_core_ctim_refclk  (HCLK         ),
+  .pad_core_rst_b        (rstn_out       ),
+  .padmux_cpu_jtg_tclk   (1'b0  ),
+  .padmux_cpu_jtg_tms_i  (1'b0 ),
+
+  .pmu_cpu_dfs_req       (1'b0      ),
+  .pmu_wic_intr          (1'b0         ),
+  .pwm_wic_intr          (1'b0         ),
+  .rtc_wic_intr          (1'b0         ),
+  .scan_en               (1'b0            ),
+  .scan_mode             (1'b0            ),
+  .test_mode             (1'b0            ),
+  .tim0_wic_intr         (2'b0        ),
+  .tim1_wic_intr         (2'b0        ),
+  .tim2_wic_intr         (2'b0        ),
+  .tim3_wic_intr         (2'b0        ),
+  .tim4_wic_intr         (2'b0        ),
+  .tim5_wic_intr         (2'b0        ),
+  .tim6_wic_intr         (2'b0        ),
+  .tim7_wic_intr         (2'b0        ),
+  .usi0_wic_intr         (1'b0        ),
+  .usi1_wic_intr         (1'b0        ),
+  .usi2_wic_intr         (1'b0        ),
+  .wdt_wic_intr          (1'b0        )
+);
 /*
-    //M1 core
-    integration_kit_dbg u_integration_kit_dbg(   
-		 // Inputs
-        .HCLK              (HCLK),           // System Clock
-        .SYSRESETn         (SYSRESETn),      // System Reset
-        .DBGRESETn         (DBGRESETn),      // Debug Reset
-      
-        .nTRST             (pad_nTRST),      // JTAG reset
-        .SWCLKTCK          (pad_TCK),        // Serial wire and JTAG clock
-        .SWDITMS           (pad_TMS),        // SW Data / JTAG Test Mode Select
-        .TDI               (pad_TDI),        // JTAG data input
-        
-        .EDBGRQ            (1'b0),           // Debug request
-        .DBGRESTART        (1'b0),           // Restart from halt request
-
-        .SYSRESETREQ       (SYSRESETREQ),    // Cortex-M1 SYSRESET request
-        .LOCKUP            (),               // Cortex-M1 lockup
-        .HALTED            (),               // Cortex-M1 halted
-        .DBGRESTARTED      (),               // Restart from halt acknowledge
-        
-        .JTAGNSW           (),               // JTAG = 1, serial wire = 0
-        .JTAGTOP           (),               // state controller indicator
-        .TDO               (pad_TDO),        // JTAG data output
-        .nTDOEN            (),               // JTAG data out enable
-        .SWDO              (),               // Serial wire data out
-        .SWDOEN            (),               // Serial data output enable
-
-        //AHB AHB[31:28] = 4'h7,4'h8,4'h9    AHB[27:0] = 28'h000_0000 ~ 28'hfff_ffff
-        .HSEL              (HSEL),           // AHB Memory select
-        .HTRANS            (HTRANS),         // AHB Memory transaction type
-        .HBURST            (HBURST),         // AHB Memory burst information
-        .HPROT             (HPROT),          // AHB Memory protection control
-        .HSIZE             (HSIZE),          // AHB Memory transfer size
-        .HWRITE            (HWRITE),         // AHB Memory transfer direction
-        .HMASTLOCK         (HMASTLOCK),      // AHB Memory locked transfer
-        .HADDR             (HADDR),          // AHB Memory transfer address
-        .HWDATA            (HWDATA),         // AHB Memory write data bus
-        .HREADY            (HREADY),         // AHB Memory bus ready
-        .HREADYOUT         (HREADYOUT_udp),  // AHB Memory ready
-        .HRESP             (HRESP_udp),      // AHB Memory response
-        .HRDATA            (HRDATA_udp),     // AHB Memory read data bus  
-        .HRDATAmux         (HRDATAmux),
-
-        //APB AHB[11:0]    AHB[31:0] = 32'h5000c000 ~ 32'h5000cfff
-        .PADDR             (PADDR),   
-        .PWRITE            (PWRITE),    
-        .PWDATA            (PWDATA),    
-        .PENABLE           (PENABLE),   
-        .PSEL              (PSEL),      
-        .PRDATA            (PRDATA),   
-        .PREADY            (1'b1),  
-        .PSLVERR           (1'b0),   
-
-        //Periphral
-        //GPIO
-        .p0_out            (p0_out),         // GPIO 0 outputs
-        .p0_outen          (p0_outen),       // GPIO 0 output enables
-        .p0_altfunc        (),               // GPIO 0 alternate function (pin mux)
-        .p0_in             ({{14{1'b0}}, gpio_in1, gpio_in0}),          // GPIO 0 inputs
-
-        //UART0
-        .RX0               (RX),
-        .TX0               (TX),
-
-        //UART1
-        .RX1               (),
-        .TX1               (),
-
-        //WATCHDOG
-        .watchdog_reset    (watchdog_reset),
-
-        //SPI
-        .spi0_clk          (spi0_clk),
-        .spi0_cs           (spi0_cs_0),
-        .spi0_mosi         (spi0_mosi),
-        .spi0_miso         (spi0_miso),
-
-        //I2C 
-        .scl_pad_i         (scl_pad_i),
-        .scl_pad_o         (scl_pad_o),
-        .sda_pad_i         (sda_pad_i),
-        .sda_pad_o         (sda_pad_o),
-
-        //MEM        
-        .wdata             (wdata),
-        .waddr             (waddr),
-        .w_en              (w_en),
-        .rdata             (rdata),
-        .raddr             (raddr),
-        .r_en              (r_en),
-        .mem_cs            (mem_cs),
-
-        //TSMAC
-        .tsmac_tdata       (m1_tdata),
-        .tsmac_tstart      (m1_tstart),
-        .tsmac_tpnd        (m1_tpnd),
-        .tsmac_tlast       (m1_tlast),
-
-        .tsmac_rdata       (ethernet_fifo_rd_data[7:0]),
-        .tsmac_rvalid      (ethernet_fifo_rd_data[8]),
-        .tsmac_rlast       (ethernet_fifo_rd_data[9]),
-
-        //DDR    
-        .aclk_mux          (core_clk),              
-        .awaddr_mux        (axi_awaddr),      
-        .awlen_mux         (axi_awlen),            
-        .awvalid_mux       (axi_awvalid),     
-        .awready_mux       (axi_awready),        
-        .wdata_mux         (axi_wdata),       
-        .wstrb_mux         (axi_wstrb),       
-        .wlast_mux         (wlast_mux),       
-        .wvalid_mux        (wvalid_mux),      
-        .wready_mux        (axi_wready),      
-       
-        .araddr_mux        (axi_araddr),      
-        .arlen_mux         (axi_arlen),           
-        .arvalid_mux       (axi_arvalid),     
-        .arready_mux       (axi_arready),            
-        .rdata_mux         (axi_rdata),            
-        .rlast_mux         (axi_rlast),       
-        .rvalid_mux        (axi_rvalid),      
-        .rready_mux        (rready_mux)      
-    );   
+reg [13:0] cnt_code = 0;
+always @(posedge HCLK)
+begin
+    cnt_code <= cnt_code + 1;
+end
 */
+ROM u_ROM (
+  .addr(cpu_hmain0_m0_haddr[14:2]),          // input [13:0]
+  .clk(HCLK),            // input
+  .rst(~rstn_out),            // input
+  .rd_data(hmain0_cpu_m0_hrdata)     // output [31:0]
+);
 
-//MEM-------------------------------------------------------------------
-    wire a_wr_en;
-    assign a_wr_en = w_en | ~r_en;
 
-    wire [31:0] rdata0;
-    assign rdata = rdata0;
+//SRAM
+sms_bank_64k_top  u_SRAM (
+  .big_endian_b                (1'b1           ),
+  .mem_haddr                   (cpu_hmain0_m2_haddr_SRAM             ),
+  .mem_hclk                    (HCLK               ),
+  .mem_hprot                   (cpu_hmain0_m2_hprot_SRAM             ),
+  .mem_hrdata                  (hmain0_cpu_m2_hrdata_SRAM            ),//o
+  .mem_hready                  (1'b1                       ),
+  .mem_hready_resp             (hmain0_cpu_m2_hready_SRAM            ),//o
+  .mem_hresp                   (             ),//o
+  .mem_hrst_b                  (rstn_out             ),
+  .mem_hsel                    (mem_hsel_SRAM              ),
+  .mem_hsize                   (cpu_hmain0_m2_hsize_SRAM             ),
+  .mem_htrans                  (cpu_hmain0_m2_htrans_SRAM            ),
+  .mem_hwdata                  (cpu_hmain0_m2_hwdata_SRAM            ),
+  .mem_hwrite                  (cpu_hmain0_m2_hwrite_SRAM            ),
+  .region_rd_deny_flag         (1'b0       ),
+  .region_wr_deny_flag         (1'b0       ),
+  .sms_idle0                   (                  )
+);
+
+
+reg [31:0] cpu_hmain0_m2_haddr_1d = 32'b0;
+always @(posedge HCLK)
+begin
+    cpu_hmain0_m2_haddr_1d <= cpu_hmain0_m2_haddr;
+end
+
+always @(*)
+begin
+    if (cpu_hmain0_m2_haddr & 32'hf0000000 == 32'h20000000)
+    begin
+        cpu_hmain0_m2_haddr_SRAM = cpu_hmain0_m2_haddr;//?????
+        cpu_hmain0_m2_hprot_SRAM = cpu_hmain0_m2_hprot;
+        cpu_hmain0_m2_hsize_SRAM = cpu_hmain0_m2_hsize;
+        cpu_hmain0_m2_htrans_SRAM = cpu_hmain0_m2_htrans;
+        cpu_hmain0_m2_hwrite_SRAM = cpu_hmain0_m2_hwrite;
+        mem_hsel_SRAM = 1'b1;
+    end
+    else 
+    begin
+        cpu_hmain0_m2_haddr_SRAM = 0;
+        cpu_hmain0_m2_hprot_SRAM = 0;
+        cpu_hmain0_m2_hsize_SRAM = 0;
+        cpu_hmain0_m2_htrans_SRAM = 0;
+        cpu_hmain0_m2_hwrite_SRAM = 0;
+        mem_hsel_SRAM = 1'b0;
+    end
+end
+
+
+always @(*)
+begin
+    if (cpu_hmain0_m2_haddr_1d & 32'hf0000000 == 32'h20000000)
+        cpu_hmain0_m2_hwdata_SRAM = cpu_hmain0_m2_hwdata;
+    else cpu_hmain0_m2_hwdata_SRAM = 0;
+end
+
+//uart
+reg [31:0] soc_sel = 32'b0;
+reg [7:0] soc_sel_reg = 32'b0;
+always @(*)
+begin
+    if (cpu_hmain0_m2_haddr_1d & 32'hf0000000 == 32'h50000000)
+        soc_sel = cpu_hmain0_m2_hwdata;
+    else soc_sel = 0;
+end
+
+always @(posedge HCLK)
+begin
+    if (soc_sel != 0)
+        soc_sel_reg <= soc_sel[7:0];
+    else soc_sel_reg <= soc_sel_reg;
+end
+
+
+always @(*)
+begin
+    if(cpu_hmain0_m2_haddr_1d & 32'hf0000000 == 32'h20000000)
+        hmain0_cpu_m2_hrdata = hmain0_cpu_m2_hrdata_SRAM;
+    else if (cpu_hmain0_m2_haddr_1d & 32'hf0000000 == 32'h50000000)
+        hmain0_cpu_m2_hrdata = {4{receive_data}};
+end
+
+
+
 
 //DDR------------------------------------------------------------------
 DDR3_50H u_DDR3_50H (
@@ -669,7 +846,7 @@ hdmi_ddr    hdmi_ddr(
     wire            de_in_hsst;/*synthesis PAP_MARK_DEBUG="1"*/
     wire            vs_in_hsst;/*synthesis PAP_MARK_DEBUG="1"*/
     wire            pixclk_in_hsst;/*synthesis PAP_MARK_DEBUG="1"*/
-
+/*
 hsst_ddr    u_hsst_ddr(
     
     .i_free_clk                    (sys_clk                    ), // input          
@@ -705,9 +882,10 @@ hsst_ddr    u_hsst_ddr(
     .vs_in_hsst(vs_in_hsst)                    ,
     .pixclk_in_hsst(pixclk_in_hsst)               
 );
-
+*/
 
 //HDMI_OUT--------------------------------------------------------------------------
+
 ddr_hdmi    ddr_hdmi(
     .core_clk(core_clk)                  ,
     .ddr_init_done(ddr_init_done)        ,
@@ -735,10 +913,10 @@ ddr_hdmi    ddr_hdmi(
     .axi_rvalid(axi_rvalid)                ,
 
     //读入接口
-    .pclk_in(pixclk_in_hsst)                    ,    //.pclk_in(pixclk_in_hdmi)  
-    .vs_in(vs_in_hsst)                        ,      //.vs_in(vs_in_hdmi)  
-    .de_in(de_in_hsst)                        ,      //.de_in(de_in_hdmi)  
-    .i_rgb565(i_rgb565_hsst)                    ,    //.i_rgb565(i_rgb565_hdmi) 
+    .pclk_in(pixclk_in_hdmi)                    ,    //.pclk_in(pixclk_in_hdmi)  
+    .vs_in(vs_in_hdmi)                        ,      //.vs_in(vs_in_hdmi)  
+    .de_in(de_in_hdmi)                        ,      //.de_in(de_in_hdmi)  
+    .i_rgb565(i_rgb565_hdmi)                    ,    //.i_rgb565(i_rgb565_hdmi) 
 
     .pclk_in_1(pixclk_in_camera_1)                    ,    //.pclk_in(pixclk_in_hdmi)  
     .vs_in_1(vs_in_camera_1)                        ,      //.vs_in(vs_in_hdmi)  
@@ -756,19 +934,28 @@ ddr_hdmi    ddr_hdmi(
     .i_rgb565_3(i_rgb565_camera)    ,
 
     //读出接口
-    .vs_out(vs_out)                     ,
-    .hs_out(hs_out)                     ,
-    .de_out(de_out)                   ,
-    .r_out(r_out)               ,
-    .g_out(g_out)               ,
-    .b_out(b_out)               ,
+    .vs_out(vs_drt)                     ,
+    .hs_out(hs_drt)                     ,
+    .de_out(de_drt)                   ,
+    .r_out(r_drt)               ,
+    .g_out(g_drt)               ,
+    .b_out(b_drt)               ,
     
     //uart
     .rx_data             (  rx_data       ),// output reg [7:0]  rx_data,  
     .rx_en               (  rx_en         ),// output reg        rx_en,                          
     .rx_finish           (  rx_finish     ), // output            rx_finish 
     .clk_div_cnt         (clk_div_cnt     ),
-    .led_8wire           (led_8wire       )
+    .led_8wire           (led_8wire       ),
+
+    //gpio
+    .gpio_in0_db    (gpio_in0_db),
+    .gpio_in1_db    (gpio_in1_db),
+    .gpio_in2_db    (gpio_in2_db),
+    .gpio_in3_db    (gpio_in3_db),
+    .gpio_in4_db    (gpio_in4_db),
+
+    .soc_sel    (cpu_hmain0_m2_hwdata[4:0])
 );
 
     assign    pixclk_out = pix_clk;
@@ -788,8 +975,7 @@ video_ethernet    video_ethernet(
     .href_in(de_out),         //cmos hsync refrence,data valid
     .pclk_in(pixclk_out),         //cmos pxiel clock
     .data_in(data_565_out),           //cmos data
-
-/*******************************ethernet***********************/                        
+                       
     .rgmii_txd(phy_txd),                  //RGMII 发?数??
     .rgmii_txctl(phy_tx_en),                //RGMII 发?数据有效信??
     .rgmii_txc(l0_sgmii_clk_shft),                  //125Mhz ethernet rgmii tx clock
@@ -799,7 +985,8 @@ video_ethernet    video_ethernet(
     );
 
 //pcie-------------------------------------------------
-/*video_pcie    video_pcie(
+
+video_pcie    video_pcie(
     .button_rst_n(rst_key)    ,
     .perst_n(perst_n)         ,
     .free_clk(sys_clk)        ,
@@ -833,7 +1020,7 @@ video_ethernet    video_ethernet(
         hs_out_d2<=hs_out_d1;
      end
 
-*/
+
 
 //UART---------------------------------------------------------------------
 
@@ -888,6 +1075,58 @@ video_ethernet    video_ethernet(
         .rx_finish           (  rx_finish     ), // output            rx_finish       
         .clk_div_cnt_wire    (clk_div_cnt)
     );                                            
+
+//sobel------------------
+sobel_top sobel_top(
+	.pix_clk(pix_clk),
+	.rst(~ddr_init_done),	
+	.i_r(r_drt),
+	.i_g(g_drt),
+	.i_b(b_drt),
+	.i_hs(hs_drt),
+	.i_vs(vs_drt),
+	.i_de(de_drt),
+    .o_r(r_sobel),
+    .o_g(g_sobel),
+    .o_b(b_sobel),
+    .o_hs(hs_sobel),
+    .o_vs(vs_sobel),
+    .o_de(de_sobel)
+);
+
+wire [7:0] r_sobel;
+wire [7:0] g_sobel;
+wire [7:0] b_sobel;
+wire [7:0] r_drt;
+wire [7:0] g_drt;
+wire [7:0] b_drt;
+wire [1:0] btn2;
+reg  sobel_sel = 1'b0;
+assign btn2 = {gpio_in5_db, gpio_in6_db};
+
+always @(posedge pix_clk)
+begin
+    case(btn2)
+        2'b01:begin
+            sobel_sel <= 1'b0;
+        end
+        2'b10:begin
+            sobel_sel <= 1'b1;
+        end
+        default:begin
+            sobel_sel <= sobel_sel;
+        end
+    endcase        
+end
+
+
+    assign vs_out = sobel_sel ? vs_sobel : vs_drt;
+    assign de_out = sobel_sel ? de_sobel : de_drt;
+    assign hs_out = sobel_sel ? hs_sobel : hs_drt;
+    assign r_out = sobel_sel ? r_sobel : r_drt;
+    assign g_out = sobel_sel ? g_sobel : g_drt;
+    assign b_out = sobel_sel ? b_sobel : b_drt;
+
 
 endmodule
 

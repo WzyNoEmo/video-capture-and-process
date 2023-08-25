@@ -22,8 +22,8 @@
 module wr_buf_3 #(
     parameter                     ADDR_WIDTH      = 6'd27,
     parameter                     ADDR_OFFSET     = 32'h0000_0000,
-    parameter                     H_NUM           = 12'd1920,
-    parameter                     V_NUM           = 12'd1080,
+    //parameter                     H_NUM           = 12'd1920,
+    //parameter                     V_NUM           = 12'd1080,
     parameter                     DQ_WIDTH        = 12'd16,
     parameter                     LEN_WIDTH       = 12'd16,
     parameter                     PIX_WIDTH       = 12'd24,
@@ -49,13 +49,18 @@ module wr_buf_3 #(
     input                         ddr_wdata_req,
     
     output [FRAME_CNT_WIDTH-1 :0] frame_wcnt,
-    output                        frame_wirq
+    output                        frame_wirq,
+
+    input    [11:0]    H_NUM,
+    input    [11:0]    V_NUM,
+    input         sel_en,
+    input         scal_en
 );
     localparam RAM_WIDTH      = 16'd32;
     localparam DDR_DATA_WIDTH = DQ_WIDTH * 8;
-    localparam WR_LINE_NUM    = H_NUM*PIX_WIDTH/RAM_WIDTH;              //一行图像数据需要写几个BUFF的RAM（几次写）1280*16/32=640
-    localparam RD_LINE_NUM    = WR_LINE_NUM*RAM_WIDTH/DDR_DATA_WIDTH;   //DDR一次突发读的长度（几次读）可以读完一行图像数据  640*32/128=160
-    localparam DDR_ADDR_OFFSET= RD_LINE_NUM*DDR_DATA_WIDTH/DQ_WIDTH;    //一行到下一行数据在DDR的地址偏移    160*128/16=1280
+    wire [15:0] WR_LINE_NUM    = H_NUM*PIX_WIDTH/RAM_WIDTH;              //一行图像数据需要写几个BUFF的RAM（几次写）1280*16/32=640
+    wire [15:0] RD_LINE_NUM    = WR_LINE_NUM*RAM_WIDTH/DDR_DATA_WIDTH;   //DDR一次突发读的长度（几次读）可以读完一行图像数据  640*32/128=160
+    wire [15:0] DDR_ADDR_OFFSET= RD_LINE_NUM*DDR_DATA_WIDTH/DQ_WIDTH;    //一行到下一行数据在DDR的地址偏移    160*128/16=1280
     
     //===========================================================================
     reg       wr_fsync_1d;
@@ -111,12 +116,53 @@ module wr_buf_3 #(
         begin
             wr_data_1d <= wr_data;
             wr_data_2d <= wr_data_1d;
-            write_en <= (x_cnt[1:0]==2'b11&&y_cnt[0])?1'b1:1'b0;
-            if(x_cnt[1:0]==2'b11&&y_cnt[0])
-                write_data <= {wr_data,wr_data_2d};
-            else
-                write_data <= write_data;
         end 
+
+        always @(posedge wr_clk)
+        begin
+            if(~sel_en) write_en <= 0;
+            else begin
+                if(scal_en) write_en <= (x_cnt[1:0]==2'b11&&y_cnt[0])?1'b1:1'b0;
+                else        write_en <= x_cnt[0];
+            end
+        end 
+
+        always @(posedge wr_clk)
+        begin
+            if(scal_en) begin
+                if(x_cnt[1:0]==2'b11&&y_cnt[0])
+                    write_data <= {wr_data,wr_data_2d};
+                else
+                    write_data <= write_data;
+            end
+            else begin
+                if(x_cnt[0])
+                    write_data <= {wr_data,wr_data_1d};
+                else
+                    write_data <= write_data;
+            end
+        end 
+
+    reg rd_pulse;   //让DDR读取数据的脉冲信号
+    always @(posedge wr_clk)
+    begin
+        if(~sel_en) rd_pulse <= 0;
+    else  begin     
+        if(scal_en) begin
+            if(x_cnt > 12'd1260  & y_cnt[0] & wr_enable)    //此处减去H_NUM中的5个像素，是为了预留一些保护时间，避免出现数据读取不完整的问题
+                rd_pulse <= 1'b1;
+            else
+                rd_pulse <= 1'b0; 
+        end
+        else begin
+            if(x_cnt > 12'd1260  & wr_enable)    //此处减去H_NUM中的5个像素，是为了预留一些保护时间，避免出现数据读取不完整的问题
+                rd_pulse <= 1'b1;
+            else
+                rd_pulse <= 1'b0; 
+        end
+    end
+    end 
+
 
 
     always @(posedge wr_clk)
@@ -155,27 +201,19 @@ module wr_buf_3 #(
     reg  [9:0] rd_addr=0;
     wire [127:0] rd_wdata;
     reg  [127:0] rd_wdata_1d=0;
-    wr_fram_buf wr_fram_buf3 (
+    wr_fram_buf_hdmi wr_fram_buf3 (
         .wr_data            (  write_data     ),// input [31:0]               
         .wr_addr            (  wr_addr        ),// input [11:0]               
         .wr_en              (  write_en       ),// input                      
         .wr_clk             (  wr_clk         ),// input                      
-        .wr_rst             (  ~ddr_rstn_2d   ),// input    
+        .wr_rst             (  ~ddr_rstn_2d || ~sel_en    ),// input    
                           
         .rd_addr            (  rd_addr        ),// input [9:0]                
         .rd_data            (  rd_wdata       ),// output [127:0]             
         .rd_clk             (  ddr_clk        ),// input                      
         .rd_rst             (  ~ddr_rstn      ) // input                      
     );
-    
-    reg rd_pulse;   //让DDR读取数据的脉冲信号
-    always @(posedge wr_clk)
-    begin
-        if(x_cnt > 12'd1260  & y_cnt[0] & wr_enable)    //此处减去H_NUM中的5个像素，是为了预留一些保护时间，避免出现数据读取不完整的问题
-            rd_pulse <= 1'b1;
-        else
-            rd_pulse <= 1'b0; 
-    end 
+   
 
     reg rd_pulse_1d,rd_pulse_2d,rd_pulse_3d;
     always @(posedge ddr_clk)

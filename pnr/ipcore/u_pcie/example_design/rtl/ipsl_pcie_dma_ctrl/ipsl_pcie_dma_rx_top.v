@@ -281,8 +281,8 @@ ipsl_pcie_dma_ram ipsl_pcie_dma_bar0 (
     .rd_rst             (~rst_n                     )   // input
 );
 
-assign cpu_rd_en = bar2_wr_en;
-
+//assign cpu_rd_en = bar2_wr_en;
+/*
 reg                        bar2_wr_en_d1;
 reg    [ADDR_WIDTH-1:0]    bar2_wr_addr_d1;
 reg    [15:0]              bar2_wr_byte_en_d1;
@@ -299,12 +299,97 @@ begin
     bar2_wr_addr_d2 <= bar2_wr_addr_d1;
     bar2_wr_byte_en_d2 <= bar2_wr_byte_en_d1;
 end
+*/
+reg                        bar2_wr_en_d1;
+reg    [ADDR_WIDTH-1:0]    bar2_wr_addr_d1;
+reg    [15:0]              bar2_wr_byte_en_d1;
+reg                        bar2_wr_en_d2;
+reg    [ADDR_WIDTH-1:0]    bar2_wr_addr_d2;
+reg    [15:0]              bar2_wr_byte_en_d2;
 
+// 记录cpu读取的次数，2025次表示1帧读取完毕
+reg [127:0]                test_data;/*synthesis PAP_MARK_DEBUG="1"*/
+always@(posedge clk)
+begin
+    if(~rst_n) begin
+        test_data <= 128'b0;
+    end
+
+    else if(bar2_wr_en) begin
+        if(col_cnt < 40)begin
+            test_data <= {8{16'h0000}};
+        end
+        else if(col_cnt < 80)begin
+            test_data <= {{16'hF800},{16'hF801},{16'hF802},{16'hF803},{16'hF804},{16'hF805},{16'hF806},{16'hF807}};
+        end
+        else if(col_cnt < 120)begin
+            test_data <= {8{16'h07E0}};
+        end
+        else begin
+            test_data <= {8{16'h867D}};
+        end
+    end
+    else test_data <= 128'b0;
+end
+
+assign o_bar2_wr_en = bar2_wr_en;
+always@(posedge clk)
+begin
+    if(~rst_n) begin 
+        bar2_wr_en_d1 <= 0;
+        bar2_wr_addr_d1 <= 0;
+        bar2_wr_byte_en_d1 <= 0;
+        bar2_wr_en_d2 <= 0;
+        bar2_wr_addr_d2 <= 0;
+        bar2_wr_byte_en_d2 <= 0;
+    end
+    else begin
+        bar2_wr_en_d1 <= bar2_wr_en;
+        bar2_wr_addr_d1 <= bar2_wr_addr;
+        bar2_wr_byte_en_d1 <= bar2_wr_byte_en;
+        bar2_wr_en_d2 <= bar2_wr_en_d1;
+        bar2_wr_addr_d2 <= bar2_wr_addr_d1;
+        bar2_wr_byte_en_d2 <= bar2_wr_byte_en_d1;
+    end
+end
+
+// 128位有8个pix   8*240=1920为一行
+reg [7:0]  col_cnt;/*synthesis PAP_MARK_DEBUG="1"*/
+reg [10:0] row_cnt;/*synthesis PAP_MARK_DEBUG="1"*/
+always@(posedge clk)
+begin
+    if(~rst_n) begin
+        col_cnt <= 8'b0;
+    end
+    else if(bar2_wr_en && col_cnt < 159) begin
+        col_cnt <= col_cnt + 1'b1;
+    end
+    else if(col_cnt == 159) col_cnt <= 8'b0;
+    else col_cnt <= col_cnt;
+end
+always@(posedge clk)
+begin
+    if(~rst_n) begin
+        row_cnt <= 10'b0;
+    end
+    else if(col_cnt == 159) begin
+        row_cnt <= row_cnt + 1'b1;
+    end
+    else if(row_cnt == 719) row_cnt <= 8'b0;
+    else row_cnt <= row_cnt;
+end
+
+assign o_bar2_rd_data  = cpu_rd_data;
+assign cpu_rd_en = i_bar2_rd_clk_en ;           
+/*
+
+// mwr wr data
 ipsl_pcie_dma_ram ipsl_pcie_dma_bar2 (
+    //.wr_data            (bar2_wr_data               ),  // input [127:0]
     .wr_data            (cpu_rd_data               ),  // input [127:0]
-    .wr_addr            (bar2_wr_addr_d2               ),  // input [8:0]
-    .wr_en              (bar2_wr_en_d2                 ),  // input
-    .wr_byte_en         (bar2_wr_byte_en_d2            ),  // input [15:0]
+    .wr_addr            (bar2_wr_addr_d1               ),  // input [8:0]
+    .wr_en              (bar2_wr_en_d1                 ),  // input
+    .wr_byte_en         (bar2_wr_byte_en_d1            ),  // input [15:0]
     .wr_clk             (clk                        ),  // input
     .wr_rst             (~rst_n                     ),  // input
     .rd_addr            (i_bar2_rd_addr             ),  // input [8:0]
@@ -314,4 +399,5 @@ ipsl_pcie_dma_ram ipsl_pcie_dma_bar2 (
     .rd_rst             (~rst_n                     )   // input
 );
 
+*/
 endmodule

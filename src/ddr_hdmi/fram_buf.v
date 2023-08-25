@@ -87,7 +87,9 @@ module fram_buf #(
     input  [MEM_DQ_WIDTH*8-1:0]   axi_rdata      ,
     input                         axi_rvalid     ,
     input                         axi_rlast      ,
-    input  [3:0]                  axi_rid            
+    input  [3:0]                  axi_rid        ,
+
+    input  [4:0]    video_sel    
 );
     parameter LEN_WIDTH       = 32;
     parameter LINE_ADDR_WIDTH = 22;//19;//1440 * 1080 = 1 555 200 = 21'h17BB00  //??????
@@ -112,18 +114,75 @@ module fram_buf #(
     wire                        read_en     ;
     wire                        ddr_wr_bac;
 
+
+reg [11:0] H_NUM_1 = 0;
+reg [11:0] V_NUM_1 = 0;
+reg [11:0] H_NUM_2 = 0;
+reg [11:0] V_NUM_2 = 0;
+reg [11:0] H_NUM_3 = 0;
+reg [11:0] V_NUM_3 = 0;
+reg [11:0] H_NUM_4 = 0;
+reg [11:0] V_NUM_4 = 0;
+
+reg [31:0] CHANNEL_OFFSET_1 = 0;
+reg [31:0] CHANNEL_OFFSET_2 = 0;
+reg [31:0] CHANNEL_OFFSET_3 = 0;
+reg [31:0] CHANNEL_OFFSET_4 = 0;
+
+always @(*)
+begin
+    case(video_sel)
+    5'b10000:begin
+        H_NUM_1 <= 12'd640;
+        V_NUM_1 <= 12'd360;
+        H_NUM_2 <= 12'd640;
+        V_NUM_2 <= 12'd360;
+        H_NUM_3 <= 12'd640;
+        V_NUM_3 <= 12'd360;
+        H_NUM_4 <= 12'd640;
+        V_NUM_4 <= 12'd360;
+        CHANNEL_OFFSET_1 <= 32'd0;
+        CHANNEL_OFFSET_2 <= 32'd640;
+        CHANNEL_OFFSET_3 <= 32'd460800;
+        CHANNEL_OFFSET_4 <= 32'd461440;
+    end
+    5'b01000:begin
+        H_NUM_1 <= 12'd1280;
+        V_NUM_1 <= 12'd720;
+        CHANNEL_OFFSET_1 <= 32'd0;
+    end
+    5'b00100:begin
+        H_NUM_2 <= 12'd1280;
+        V_NUM_2 <= 12'd720;
+        CHANNEL_OFFSET_2 <= 32'd0;
+    end
+    5'b00010:begin
+        H_NUM_3 <= 12'd1280;
+        V_NUM_3 <= 12'd720;
+        CHANNEL_OFFSET_3 <= 32'd0;
+    end
+    5'b00001:begin
+        H_NUM_4 <= 12'd1280;
+        V_NUM_4 <= 12'd720;
+        CHANNEL_OFFSET_4 <= 32'd0;
+    end
+    endcase
+end
+
+
+
     wr_buf_1 #(
         .ADDR_WIDTH       (  CTRL_ADDR_WIDTH  ),//parameter                     ADDR_WIDTH      = 6'd27,
         .ADDR_OFFSET      (  32'd0            ),//parameter                     ADDR_OFFSET     = 32'h0000_0000,
-        .H_NUM            (  12'd640            ),//parameter                     H_NUM           = 12'd1920,
-        .V_NUM            (  12'd360            ),//parameter                     V_NUM           = 12'd1080,
+        //.H_NUM            (  12'd640            ),//parameter                     H_NUM           = 12'd1920,
+        //.V_NUM            (  12'd360            ),//parameter                     V_NUM           = 12'd1080,
         .DQ_WIDTH         (  MEM_DQ_WIDTH     ),//parameter                     DQ_WIDTH        = 7'd32,
         .LEN_WIDTH        (  LEN_WIDTH        ),//parameter                     LEN_WIDTH       = 6'd16,
         .PIX_WIDTH        (  PIX_WIDTH        ),//parameter                     PIX_WIDTH       = 6'd24,
         .LINE_ADDR_WIDTH  (  LINE_ADDR_WIDTH  ),//parameter                     LINE_ADDR_WIDTH = 4'd19,
         .FRAME_CNT_WIDTH  (  FRAME_CNT_WIDTH  ) //parameter                     FRAME_CNT_WIDTH = 4'd8
     ) wr_buf_1 (    
-        .CHANNEL_OFFSET   (  32'd0            ),                                
+        .CHANNEL_OFFSET   (  CHANNEL_OFFSET_1            ),                                
         .ddr_clk          (  ddr_clk          ),//input                         ddr_clk,
         .ddr_rstn         (  ddr_rstn         ),//input                         ddr_rstn,
                                               
@@ -142,21 +201,26 @@ module fram_buf #(
         .ddr_wdata_req    (  ddr_wdata_req_1    ),//input                         ddr_wdata_req,
                                               
         .frame_wcnt       (                   ),//output [FRAME_CNT_WIDTH-1 :0] frame_wcnt,
-        .frame_wirq       (  frame_wirq_1       ) //output                        frame_wirq
+        .frame_wirq       (  frame_wirq_1       ), //output                        frame_wirq
+        
+        .H_NUM            (  H_NUM_1            ),//parameter                     H_NUM           = 12'd1920,
+        .V_NUM            (  V_NUM_1            ),//parameter                     V_NUM           = 12'd1080,
+        .sel_en           (  video_sel[4] | video_sel[3]    ),
+        .scal_en          (  video_sel[4]                   )
     );
 
     wr_buf_2 #(
         .ADDR_WIDTH       (  CTRL_ADDR_WIDTH  ),//parameter                     ADDR_WIDTH      = 6'd27,
         .ADDR_OFFSET      (  32'd0            ),//parameter                     ADDR_OFFSET     = 32'h0000_0000,
-        .H_NUM            (  12'd640            ),//parameter                     H_NUM           = 12'd1920,
-        .V_NUM            (  12'd360            ),//parameter                     V_NUM           = 12'd1080,
+        //.H_NUM            (  12'd640            ),//parameter                     H_NUM           = 12'd1920,
+        //.V_NUM            (  12'd360            ),//parameter                     V_NUM           = 12'd1080,
         .DQ_WIDTH         (  MEM_DQ_WIDTH     ),//parameter                     DQ_WIDTH        = 7'd32,
         .LEN_WIDTH        (  LEN_WIDTH        ),//parameter                     LEN_WIDTH       = 6'd16,
         .PIX_WIDTH        (  PIX_WIDTH        ),//parameter                     PIX_WIDTH       = 6'd24,
         .LINE_ADDR_WIDTH  (  LINE_ADDR_WIDTH  ),//parameter                     LINE_ADDR_WIDTH = 4'd19,
         .FRAME_CNT_WIDTH  (  FRAME_CNT_WIDTH  ) //parameter                     FRAME_CNT_WIDTH = 4'd8
     ) wr_buf_2 (          
-        .CHANNEL_OFFSET   (  32'd640          ),             
+        .CHANNEL_OFFSET   (  CHANNEL_OFFSET_2         ),             
         .ddr_clk          (  ddr_clk          ),//input                         ddr_clk,
         .ddr_rstn         (  ddr_rstn         ),//input                         ddr_rstn,
                                               
@@ -175,21 +239,26 @@ module fram_buf #(
         .ddr_wdata_req    (  ddr_wdata_req_2    ),//input                         ddr_wdata_req,
                                               
         .frame_wcnt       (                   ),//output [FRAME_CNT_WIDTH-1 :0] frame_wcnt,
-        .frame_wirq       (  frame_wirq_2       ) //output                        frame_wirq
+        .frame_wirq       (  frame_wirq_2       ), //output                        frame_wirq
+
+        .H_NUM            (  H_NUM_2            ),//parameter                     H_NUM           = 12'd1920,
+        .V_NUM            (  V_NUM_2            ),//parameter                     V_NUM           = 12'd1080,
+        .sel_en           (  video_sel[4] | video_sel[2]    ),
+        .scal_en          (  video_sel[4]                   )
     );
 
     wr_buf_3 #(
         .ADDR_WIDTH       (  CTRL_ADDR_WIDTH  ),//parameter                     ADDR_WIDTH      = 6'd27,
         .ADDR_OFFSET      (  32'd0            ),//parameter                     ADDR_OFFSET     = 32'h0000_0000,
-        .H_NUM            (  12'd640            ),//parameter                     H_NUM           = 12'd1920,
-        .V_NUM            (  12'd360            ),//parameter                     V_NUM           = 12'd1080,
+        //.H_NUM            (  12'd640            ),//parameter                     H_NUM           = 12'd1920,
+        //.V_NUM            (  12'd360            ),//parameter                     V_NUM           = 12'd1080,
         .DQ_WIDTH         (  MEM_DQ_WIDTH     ),//parameter                     DQ_WIDTH        = 7'd32,
         .LEN_WIDTH        (  LEN_WIDTH        ),//parameter                     LEN_WIDTH       = 6'd16,
         .PIX_WIDTH        (  PIX_WIDTH        ),//parameter                     PIX_WIDTH       = 6'd24,
         .LINE_ADDR_WIDTH  (  LINE_ADDR_WIDTH  ),//parameter                     LINE_ADDR_WIDTH = 4'd19,
         .FRAME_CNT_WIDTH  (  FRAME_CNT_WIDTH  ) //parameter                     FRAME_CNT_WIDTH = 4'd8
     ) wr_buf_3 (                  
-        .CHANNEL_OFFSET   (  32'd460800       ),    
+        .CHANNEL_OFFSET   (  CHANNEL_OFFSET_3       ),    
         .ddr_clk          (  ddr_clk          ),//input                         ddr_clk,
         .ddr_rstn         (  ddr_rstn         ),//input                         ddr_rstn,
                                               
@@ -208,21 +277,26 @@ module fram_buf #(
         .ddr_wdata_req    (  ddr_wdata_req_3    ),//input                         ddr_wdata_req,
                                               
         .frame_wcnt       (                   ),//output [FRAME_CNT_WIDTH-1 :0] frame_wcnt,
-        .frame_wirq       (  frame_wirq_3       ) //output                        frame_wirq
+        .frame_wirq       (  frame_wirq_3       ), //output                        frame_wirq
+
+        .H_NUM            (  H_NUM_3            ),//parameter                     H_NUM           = 12'd1920,
+        .V_NUM            (  V_NUM_3            ),//parameter                     V_NUM           = 12'd1080,
+        .sel_en           (  video_sel[4] | video_sel[1]    ),
+        .scal_en          (  video_sel[4]                   )
     );
 
     wr_buf_4 #(
         .ADDR_WIDTH       (  CTRL_ADDR_WIDTH  ),//parameter                     ADDR_WIDTH      = 6'd27,
         .ADDR_OFFSET      (  32'd0            ),//parameter                     ADDR_OFFSET     = 32'h0000_0000,
-        .H_NUM            (  12'd640            ),//parameter                     H_NUM           = 12'd1920,
-        .V_NUM            (  12'd360            ),//parameter                     V_NUM           = 12'd1080,
+        //.H_NUM            (  12'd640            ),//parameter                     H_NUM           = 12'd1920,
+        //.V_NUM            (  12'd360            ),//parameter                     V_NUM           = 12'd1080,
         .DQ_WIDTH         (  MEM_DQ_WIDTH     ),//parameter                     DQ_WIDTH        = 7'd32,
         .LEN_WIDTH        (  LEN_WIDTH        ),//parameter                     LEN_WIDTH       = 6'd16,
         .PIX_WIDTH        (  PIX_WIDTH        ),//parameter                     PIX_WIDTH       = 6'd24,
         .LINE_ADDR_WIDTH  (  LINE_ADDR_WIDTH  ),//parameter                     LINE_ADDR_WIDTH = 4'd19,
         .FRAME_CNT_WIDTH  (  FRAME_CNT_WIDTH  ) //parameter                     FRAME_CNT_WIDTH = 4'd8
     ) wr_buf_4 (                                       
-        .CHANNEL_OFFSET   (  32'd461440       ),
+        .CHANNEL_OFFSET   (  CHANNEL_OFFSET_4       ),
         .ddr_clk          (  ddr_clk          ),//input                         ddr_clk,
         .ddr_rstn         (  ddr_rstn         ),//input                         ddr_rstn,
                                               
@@ -241,7 +315,12 @@ module fram_buf #(
         .ddr_wdata_req    (  ddr_wdata_req_4    ),//input                         ddr_wdata_req,
                                               
         .frame_wcnt       (                   ),//output [FRAME_CNT_WIDTH-1 :0] frame_wcnt,
-        .frame_wirq       (  frame_wirq_4       ) //output                        frame_wirq
+        .frame_wirq       (  frame_wirq_4       ), //output                        frame_wirq
+
+        .H_NUM            (  H_NUM_4            ),//parameter                     H_NUM           = 12'd1920,
+        .V_NUM            (  V_NUM_4            ),//parameter                     V_NUM           = 12'd1080,
+        .sel_en           (  video_sel[4] | video_sel[0]    ),
+        .scal_en          (  video_sel[4]                   )
     );
 
 //******************arb*************************
@@ -430,7 +509,7 @@ end
     
     always @(posedge ddr_clk)
     begin
-        if(frame_wirq_4)
+        if(1'b1)
             init_done <= 1'b1;
         else
             init_done <= init_done;
